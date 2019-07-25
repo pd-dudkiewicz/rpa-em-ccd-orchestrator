@@ -52,6 +52,10 @@ withPipeline(type , product, component) {
     loadVaultSecrets(secrets)
     installCharts()
 
+    after('smoketest:demo') {
+        sh "./gradlew functional"
+    }
+
     after('smoketest:aat') {
         sh "rm -rf infrastructure/"
     }
