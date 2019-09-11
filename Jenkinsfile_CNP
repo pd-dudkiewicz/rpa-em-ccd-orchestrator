@@ -56,7 +56,4 @@ withPipeline(type , product, component) {
         sh "./gradlew functional"
     }
 
-    after('smoketest:aat') {
-        sh "rm -rf infrastructure/"
-    }
 }
