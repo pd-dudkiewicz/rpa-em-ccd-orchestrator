@@ -47,6 +47,13 @@ def vaultOverrides = [
 ]
 
 withPipeline(type , product, component) {
+    onDemo {
+        env.IDAM_API_BASE_URI = 'https://idam-api.demo.platform.hmcts.net'
+        env.S2S_BASE_URI = 'http://rpe-service-auth-provider-demo.service.core-compute-demo.internal'
+        env.IDAM_WEBSHOW_WHITELIST = 'https://em-show-demo.service.core-compute-demo.internal/oauth2/callback'
+        env.EM_STITCHING_API_URL = 'http://em-stitching-demo.service.core-compute-demo.internal'
+        env.DM_STORE_APP_URL = 'http://dm-store-demo.service.core-compute-demo.internal'
+    }
     overrideVaultEnvironments(vaultOverrides)
     enableDockerBuild()
     loadVaultSecrets(secrets)
