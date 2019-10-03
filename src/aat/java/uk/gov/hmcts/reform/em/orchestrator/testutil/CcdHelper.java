@@ -53,7 +53,7 @@ public class CcdHelper {
         Assert.assertTrue(HttpHelper.isSuccessful(ccdGwRequest()
                 .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
                 .multiPart("file", "adv_bundling_functional_tests_ccd_def.xlsx",
-                        ClassLoader.getSystemResourceAsStream("adv_bundling_functional_tests_ccd_def.xlsx"),
+                        ClassLoader.getSystemResourceAsStream(Env.getCcdDefFileName()),
                         "application/octet-stream")
                 .request("POST", Env.getCcdDefApiUrl() + "/import")
                 .getStatusCode()));
@@ -86,7 +86,7 @@ public class CcdHelper {
     public String createCase(String documents) {
         Response createTriggerResponse = ccdGwRequest()
                 .header("experimental", "true")
-                .get(Env.getCcdDataApiUrl() + "/case-types/CCD_BUNDLE_MVP_TYPE/event-triggers/createCase")
+                .get(Env.getCcdDataApiUrl() + "/case-types/CCD_BUNDLE_MVP_TYPE_ASYNC/event-triggers/createCase")
                 .andReturn();
 
         Assert.assertTrue(HttpHelper.isSuccessful(createTriggerResponse.getStatusCode()));
@@ -94,7 +94,7 @@ public class CcdHelper {
         Response createCaseResponse = ccdGwRequest()
             .contentType(ContentType.JSON)
             .body(String.format(createAutomatedBundlingCaseTemplate, documents, createTriggerResponse.jsonPath().getString("token")))
-            .post(Env.getCcdDataApiUrl() + String.format("/caseworkers/%s/jurisdictions/PUBLICLAW/case-types/CCD_BUNDLE_MVP_TYPE/cases",
+            .post(Env.getCcdDataApiUrl() + String.format("/caseworkers/%s/jurisdictions/PUBLICLAW/case-types/CCD_BUNDLE_MVP_TYPE_ASYNC/cases",
                     idamHelper.getUserId(bundleTesterUser))).andReturn();
 
         Assert.assertTrue(HttpHelper.isSuccessful(createCaseResponse.getStatusCode()));
