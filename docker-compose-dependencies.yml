@@ -189,7 +189,7 @@ services:
       - 5433:5432
 
   ccd-user-profile-api:
-    image: "hmcts/ccd-user-profile-api:${CCD_USER_PROFILE_API_TAG:-latest}"
+    image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
     environment:
       USER_PROFILE_DB_HOST: rpa-em-ccd-orchestrator-shared-database
       USER_PROFILE_DB_PORT: 5432
@@ -292,7 +292,7 @@ services:
       - rpa-em-ccd-orchestrator-shared-database:/var/lib/postgresql/data
 
   ccd-case-management-web:
-    image: "hmcts/ccd-case-management-web:${CCD_CASE_MANAGEMENT_WEB_TAG:-latest}"
+    image: hmctspublic.azurecr.io/ccd/case-management-web:latest
     container_name: ccd-case-management-web
     environment:
       IDAM_LOGIN_URL: https://localhost:3501/login
@@ -308,7 +308,7 @@ services:
       - ccd-api-gateway
 
   ccd-api-gateway:
-    image: "hmctspublic.azurecr.io/ccd/ccd-api-gateway/base:${CCD_API_GATEWAY_TAG:-latest}"
+    image: hmctspublic.azurecr.io/ccd/ccd-api-gateway/base:latest
     container_name: ccd-api-gateway
     environment:
       IDAM_BASE_URL: http://idam-api:8080
