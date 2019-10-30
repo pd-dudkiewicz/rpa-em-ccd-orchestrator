@@ -63,4 +63,13 @@ curl https://raw.githubusercontent.com/hmcts/reform-api-docs/master/bin/publish-
 sh ./publish-swagger-docs.sh
 '''
     }
+
+    after('functional:aat') {
+        publishHTML target: [
+                reportDir            : "target/site/serenity/",
+                reportFiles          : "index.html",
+                reportName           : "AAT Functional Tests",
+                alwaysLinkToLastBuild: true
+        ]
+    }
 }

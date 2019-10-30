@@ -16,7 +16,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.*;
 
-public class CcdCloneScenarios {
+public class CcdCloneScenarios extends BaseClass {
 
     private final ObjectMapper mapper = new ObjectMapper();
 

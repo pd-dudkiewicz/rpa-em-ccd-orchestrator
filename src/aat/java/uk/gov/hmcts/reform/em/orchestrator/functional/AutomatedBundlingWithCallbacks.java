@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.*;
 
-public class AutomatedBundlingWithCallbacks {
+public class AutomatedBundlingWithCallbacks extends BaseClass{
 
     private static final int WAIT_SECONDS = 60;
 

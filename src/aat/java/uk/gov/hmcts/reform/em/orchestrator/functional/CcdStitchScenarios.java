@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.*;
 
-public class CcdStitchScenarios {
+public class CcdStitchScenarios extends BaseClass {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
