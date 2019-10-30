@@ -14,7 +14,7 @@ import java.util.HashMap;
 import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.testUtil;
 
 @Ignore
-public class CcdPrehookScenarios {
+public class CcdPrehookScenarios extends BaseClass {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final File jsonFile = new File(ClassLoader.getSystemResource("prehook-case.json").getPath());
