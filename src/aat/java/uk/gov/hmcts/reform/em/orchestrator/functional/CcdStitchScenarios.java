@@ -3,21 +3,27 @@ package uk.gov.hmcts.reform.em.orchestrator.functional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import net.serenitybdd.junit.runners.SerenityRunner;
+import net.thucydides.core.annotations.Steps;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.http.MediaType;
+import org.junit.runner.RunWith;
+import uk.gov.hmcts.reform.em.orchestrator.functional.actions.BundleActions;
 import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdBoolean;
 import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdBundleDTO;
 import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdValue;
-import uk.gov.hmcts.reform.em.orchestrator.testutil.Env;
 
 import java.io.IOException;
 
-import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.*;
+import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.testUtil;
 
-public class CcdStitchScenarios extends BaseClass {
+@RunWith(SerenityRunner.class)
+public class CcdStitchScenarios {
 
     private final ObjectMapper mapper = new ObjectMapper();
+
+    @Steps
+    private BundleActions bundleActions;
 
     @Test
     public void testPostBundleStitch() throws IOException {
@@ -25,10 +31,7 @@ public class CcdStitchScenarios extends BaseClass {
         String json = mapper.writeValueAsString(new CcdValue<>(bundle));
         String wrappedJson = String.format("{ \"case_details\":{ \"case_data\":{ \"caseBundles\":[ %s ] } } }", json);
 
-        Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(wrappedJson)
-                .request("POST", Env.getTestUrl() + "/api/stitch-ccd-bundles");
+        Response response = bundleActions.stitchBundle(wrappedJson);
 
         JsonPath path = response.getBody().jsonPath();
         Assert.assertEquals(200, response.getStatusCode());
@@ -42,10 +45,7 @@ public class CcdStitchScenarios extends BaseClass {
         String json = mapper.writeValueAsString(new CcdValue<>(bundle));
         String wrappedJson = String.format("{ \"case_details\":{ \"case_data\":{ \"caseBundles\":[ %s ] } } }", json);
 
-        Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(wrappedJson)
-                .request("POST", Env.getTestUrl() + "/api/stitch-ccd-bundles");
+        Response response = bundleActions.stitchBundle(wrappedJson);
 
         JsonPath path = response.getBody().jsonPath();
         Assert.assertEquals(200, response.getStatusCode());
@@ -61,10 +61,7 @@ public class CcdStitchScenarios extends BaseClass {
         String json = mapper.writeValueAsString(new CcdValue<>(bundle));
         String wrappedJson = String.format("{ \"case_details\":{ \"case_data\":{ \"caseBundles\":[ %s ] } } }", json);
 
-        Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(wrappedJson)
-                .request("POST", Env.getTestUrl() + "/api/stitch-ccd-bundles");
+        Response response = bundleActions.stitchBundle(wrappedJson);
 
         JsonPath path = response.getBody().jsonPath();
         Assert.assertEquals(200, response.getStatusCode());
@@ -81,10 +78,7 @@ public class CcdStitchScenarios extends BaseClass {
         String json = mapper.writeValueAsString(new CcdValue<>(bundle));
         String wrappedJson = String.format("{ \"case_details\":{ \"case_data\":{ \"caseBundles\":[ %s ] } } }", json);
 
-        Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(wrappedJson)
-                .request("POST", Env.getTestUrl() + "/api/stitch-ccd-bundles");
+        Response response = bundleActions.stitchBundle(wrappedJson);
 
         JsonPath path = response.getBody().jsonPath();
         Assert.assertEquals(200, response.getStatusCode());
@@ -106,10 +100,7 @@ public class CcdStitchScenarios extends BaseClass {
         String json = mapper.writeValueAsString(new CcdValue<>(bundle));
         String wrappedJson = String.format("{ \"case_details\":{ \"case_data\":{ \"caseBundles\":[ %s ] } } }", json);
 
-        Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(wrappedJson)
-                .request("POST", Env.getTestUrl() + "/api/stitch-ccd-bundles");
+        Response response = bundleActions.stitchBundle(wrappedJson);
 
         JsonPath path = response.getBody().jsonPath();
         Assert.assertEquals(200, response.getStatusCode());
@@ -124,10 +115,7 @@ public class CcdStitchScenarios extends BaseClass {
         String json = mapper.writeValueAsString(new CcdValue<>(bundle));
         String wrappedJson = String.format("{ \"case_details\":{ \"case_data\":{ \"caseBundles\":[ %s ] } } }", json);
 
-        Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(wrappedJson)
-                .request("POST", Env.getTestUrl() + "/api/stitch-ccd-bundles");
+        Response response = bundleActions.stitchBundle(wrappedJson);
 
         JsonPath path = response.getBody().jsonPath();
         Assert.assertEquals(200, response.getStatusCode());

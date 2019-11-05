@@ -3,9 +3,14 @@ package uk.gov.hmcts.reform.em.orchestrator.functional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import org.junit.*;
-import org.springframework.http.MediaType;
-import uk.gov.hmcts.reform.em.orchestrator.testutil.Env;
+import net.serenitybdd.junit.runners.SerenityRunner;
+import net.thucydides.core.annotations.Steps;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import uk.gov.hmcts.reform.em.orchestrator.functional.actions.BundleActions;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +18,15 @@ import java.util.HashMap;
 
 import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.testUtil;
 
+@RunWith(SerenityRunner.class)
 @Ignore
-public class CcdPrehookScenarios extends BaseClass {
+public class CcdPrehookScenarios {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final File jsonFile = new File(ClassLoader.getSystemResource("prehook-case.json").getPath());
+
+    @Steps
+    private BundleActions bundleActions;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -26,10 +35,7 @@ public class CcdPrehookScenarios extends BaseClass {
 
     @Test
     public void testPostBundleStitch() {
-        Response response = testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(jsonFile)
-            .request("POST", Env.getTestUrl() + "/api/new-bundle");
+        Response response = bundleActions.createNewBundle(jsonFile);
 
         Assert.assertEquals(200, response.getStatusCode());
         Assert.assertEquals("New Bundle", response.getBody().jsonPath().getString("data.caseBundles[0].value.title"));
@@ -37,10 +43,7 @@ public class CcdPrehookScenarios extends BaseClass {
 
     @Test
     public void testEndToEnd() throws IOException {
-        HashMap caseData = testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(jsonFile)
-            .request("POST", Env.getTestUrl() + "/api/new-bundle")
+        HashMap caseData = bundleActions.createNewBundle(jsonFile)
             .getBody()
             .jsonPath()
             .get("data");
@@ -54,10 +57,7 @@ public class CcdPrehookScenarios extends BaseClass {
 
         String request = String.format("{ \"case_details\":{ \"case_data\": %s } } }", caseJson);
 
-        Response response = testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(request)
-            .request("POST", Env.getTestUrl() + "/api/stitch-ccd-bundles");
+        Response response = bundleActions.stitchBundle(request);
 
         JsonPath path = response.getBody().jsonPath();
         Assert.assertEquals(200, response.getStatusCode());

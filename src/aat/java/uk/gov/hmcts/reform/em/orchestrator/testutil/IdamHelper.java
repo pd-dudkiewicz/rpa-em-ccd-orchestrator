@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.em.orchestrator.testutil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
+import net.serenitybdd.rest.SerenityRest;
 import org.junit.Assert;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -51,7 +51,7 @@ public class IdamHelper {
     }
 
     public String getUserId(String username) {
-        String userId = RestAssured
+        String userId = SerenityRest
             .given().log().all()
             .header("Authorization", idamTokens.get(username))
             .get(idamUrl + "/details").andReturn().jsonPath().get("id").toString();
@@ -61,7 +61,7 @@ public class IdamHelper {
 
     public void createUser(String username, List<String> roles) {
         try {
-            RestAssured
+            SerenityRest
                     .given().log().all()
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .body(mapper.writeValueAsString(CreateUserDto.builder()
@@ -78,7 +78,7 @@ public class IdamHelper {
     }
 
     public void deleteUser(String username) {
-        int statusCode = RestAssured.given().log().all()
+        int statusCode = SerenityRest.given().log().all()
                 .delete(idamUrl + "/testing-support/accounts/" + username).andReturn().getStatusCode();
         Assert.assertTrue(HttpHelper.isSuccessful(statusCode) || statusCode == 404);
         idamTokens.remove(username);
@@ -88,7 +88,7 @@ public class IdamHelper {
         String credentials = username + ":" + PASSWORD;
         String authHeader = Base64.getEncoder().encodeToString(credentials.getBytes());
 
-        return RestAssured
+        return SerenityRest
                 .given()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .header("Authorization", "Basic " + authHeader)
@@ -101,7 +101,7 @@ public class IdamHelper {
     }
 
     private String getToken(String code) {
-        return RestAssured
+        return SerenityRest
             .given().log().all()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .formParam("code", code)

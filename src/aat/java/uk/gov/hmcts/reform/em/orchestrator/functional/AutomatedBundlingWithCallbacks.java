@@ -1,12 +1,15 @@
 package uk.gov.hmcts.reform.em.orchestrator.functional;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import net.serenitybdd.junit.runners.SerenityRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.*;
 
-public class AutomatedBundlingWithCallbacks extends BaseClass{
+@RunWith(SerenityRunner.class)
+public class AutomatedBundlingWithCallbacks {
 
     private static final int WAIT_SECONDS = 60;
 

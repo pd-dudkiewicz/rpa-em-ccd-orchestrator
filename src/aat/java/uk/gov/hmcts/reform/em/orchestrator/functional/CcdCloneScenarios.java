@@ -3,22 +3,28 @@ package uk.gov.hmcts.reform.em.orchestrator.functional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import net.serenitybdd.junit.runners.SerenityRunner;
+import net.thucydides.core.annotations.Steps;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.http.MediaType;
+import org.junit.runner.RunWith;
+import uk.gov.hmcts.reform.em.orchestrator.functional.actions.BundleActions;
 import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdBundleDTO;
 import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdValue;
-import uk.gov.hmcts.reform.em.orchestrator.testutil.Env;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.*;
+import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.testUtil;
 
-public class CcdCloneScenarios extends BaseClass {
+@RunWith(SerenityRunner.class)
+public class CcdCloneScenarios {
 
     private final ObjectMapper mapper = new ObjectMapper();
+
+    @Steps
+    BundleActions bundleActions;
 
     @Test
     public void testSingleBundleClone() throws IOException {
@@ -29,10 +35,7 @@ public class CcdCloneScenarios extends BaseClass {
         String json = mapper.writeValueAsString(list);
         String wrappedJson = String.format("{ \"case_details\":{ \"case_data\":{ \"caseBundles\": %s } } }", json);
 
-        Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(wrappedJson)
-                .request("POST", Env.getTestUrl() + "/api/clone-ccd-bundles");
+        Response response = bundleActions.cloneBundle(wrappedJson);
 
         JsonPath path = response.getBody().jsonPath();
 
@@ -60,10 +63,7 @@ public class CcdCloneScenarios extends BaseClass {
         String jsonList = mapper.writeValueAsString(list);
         String wrappedJson = String.format("{ \"case_details\":{ \"case_data\":{ \"caseBundles\": %s  } } }", jsonList);
 
-        Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(wrappedJson)
-                .request("POST", Env.getTestUrl() + "/api/clone-ccd-bundles");
+        Response response = bundleActions.cloneBundle(wrappedJson);
 
         JsonPath path = response.getBody().jsonPath();
 

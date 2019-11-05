@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.orchestrator.testutil;
 
-import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import net.serenitybdd.rest.SerenityRest;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.orchestrator.service.dto.*;
 
@@ -37,7 +37,7 @@ public class TestUtil {
 
         ccdHelper = new CcdHelper(idamHelper, s2sHelper);
 
-        RestAssured.useRelaxedHTTPSValidation();
+        SerenityRest.useRelaxedHTTPSValidation();
 
         idamAuth = idamHelper.getIdamToken();
         s2sAuth = s2sHelper.getEmGwS2sToken();
@@ -63,7 +63,7 @@ public class TestUtil {
     }
 
     public RequestSpecification s2sAuthRequest() {
-        return RestAssured
+        return SerenityRest
             .given()
             .header("ServiceAuthorization", s2sAuth);
     }
