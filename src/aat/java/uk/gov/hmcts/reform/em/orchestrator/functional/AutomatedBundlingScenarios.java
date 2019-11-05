@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.em.orchestrator.functional;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import net.serenitybdd.junit.runners.SerenityRunner;
 import net.thucydides.core.annotations.Steps;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import uk.gov.hmcts.reform.em.orchestrator.functional.actions.NewBundle;
+import org.junit.runner.RunWith;
+import uk.gov.hmcts.reform.em.orchestrator.functional.actions.BundleActions;
 import uk.gov.hmcts.reform.em.orchestrator.testutil.TestUtil;
 
 import java.io.IOException;
@@ -16,7 +18,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.testUtil;
 
-public class AutomatedBundlingScenarios extends BaseClass{
+@RunWith(SerenityRunner.class)
+public class AutomatedBundlingScenarios{
 
 
     private static JsonNode validJson;
@@ -24,7 +27,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
     private static JsonNode filenameJson;
 
     @Steps
-    NewBundle newBundle;
+    private BundleActions bundleActions;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -35,7 +38,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
 
     @Test
     public void testCreateBundle() {
-        Response response = newBundle.postRequestWithPayload(validJson);
+        Response response = bundleActions.createNewBundle(validJson);
 
         assertEquals(200, response.getStatusCode());
         assertEquals("New bundle", response.getBody().jsonPath().getString("data.caseBundles[0].value.title"));
@@ -48,7 +51,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
 
     @Test
     public void testInvalidConfig() {
-        Response response = newBundle.postRequestWithPayload(invalidJson);
+        Response response = bundleActions.createNewBundle(invalidJson);
 
         assertEquals(200, response.getStatusCode());
         assertEquals("Unable to load configuration: does-not-exist.yaml", response.getBody().jsonPath().getString("errors[0]"));
@@ -56,7 +59,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
 
     @Test
     public void testFilename() {
-        Response response = newBundle.postRequestWithPayload(filenameJson);
+        Response response = bundleActions.createNewBundle(filenameJson);
 
         assertEquals(200, response.getStatusCode());
         assertEquals("Bundle with filename", response.getBody().jsonPath().getString("data.caseBundles[0].value.title"));
@@ -65,7 +68,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
 
     @Test
     public void testTableOfContentsAndCoversheet() {
-        Response response = newBundle.postRequestWithPayload(validJson);
+        Response response = bundleActions.createNewBundle(validJson);
 
         assertEquals(200, response.getStatusCode());
         assertEquals("Yes", response.getBody().jsonPath().getString("data.caseBundles[0].value.hasCoversheets"));
@@ -75,7 +78,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
 
     @Test
     public void testFolderCoversheets() {
-        Response response = newBundle.postRequestWithPayload(filenameJson);
+        Response response = bundleActions.createNewBundle(filenameJson);
 
         assertEquals(200, response.getStatusCode());
         assertEquals("No", response.getBody().jsonPath().getString("data.caseBundles[0].value.hasCoversheets"));
@@ -85,7 +88,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
 
     @Test
     public void testSubSubfolders() {
-        Response response = newBundle.postRequestWithPayload(validJson);
+        Response response = bundleActions.createNewBundle(validJson);
 
         assertEquals(200, response.getStatusCode());
         Assert.assertNull(response.getBody().jsonPath().getString("data.caseBundles[0].value.folders[0].value.folders[0].value.folders"));
@@ -97,7 +100,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "f-tests-1-flat-docs.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         JsonPath responsePath = response.jsonPath();
 
@@ -114,7 +117,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "f-tests-2-filter-flat-docs.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         JsonPath responsePath = response.jsonPath();
 
@@ -129,7 +132,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "f-tests-3-foldered-docs.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         JsonPath responsePath = response.jsonPath();
 
@@ -149,7 +152,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "f-tests-4-filtered-foldered-docs.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         JsonPath responsePath = response.jsonPath();
 
@@ -167,7 +170,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "f-tests-6-has-typo.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         assertEquals(200, response.getStatusCode());
     }
@@ -177,7 +180,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "f-tests-7-not-a-single-doc.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         assertTrue(response.prettyPrint().contains("Element is an array: /caseDocuments"));
     }
@@ -187,7 +190,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "f-tests-8-not-an-array.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         assertTrue(response.prettyPrint().contains("Element is not an array: /singleDocument"));
     }
@@ -197,7 +200,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "f-tests-9-invalid-doc-property.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);;
+        Response response = bundleActions.createNewBundle(json);;
 
         assertTrue(response.prettyPrint().contains("Could not find element: /typoDocument"));
     }
@@ -207,7 +210,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "f-tests-10-invalid-doc-set-property.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         assertTrue(response.prettyPrint().contains("Could not find element: /quesoDocument"));
     }
@@ -218,7 +221,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         json = json.replaceAll("document_url", "incorrect_property_name");
         json = json.replaceAll("configurationFile", "f-tests-5-invalid-url.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         assertTrue(response.prettyPrint().contains("Could not find the property /documentLink/document_url in the node"));
     }
@@ -228,7 +231,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "nonexistent.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         assertTrue(response.getBody().print().contains("Unable to load configuration: nonexistent.yaml"));
     }
@@ -238,7 +241,7 @@ public class AutomatedBundlingScenarios extends BaseClass{
         String json = TestUtil.readFile("src/aat/resources/documents-case.json");
         json = json.replaceAll("configurationFile", "f-tests-11-multiple-filters.yaml");
 
-        Response response = newBundle.postRequestWithPayload(json);
+        Response response = bundleActions.createNewBundle(json);
 
         JsonPath responsePath = response.jsonPath();
 

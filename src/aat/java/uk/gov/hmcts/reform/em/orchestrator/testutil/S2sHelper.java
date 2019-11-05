@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.orchestrator.testutil;
 
 import com.warrenstrange.googleauth.GoogleAuthenticator;
-import io.restassured.RestAssured;
+import net.serenitybdd.rest.SerenityRest;
 import org.json.JSONObject;
 
 public class S2sHelper {
@@ -36,7 +36,7 @@ public class S2sHelper {
         jsonObject.put("microservice", microserviceName);
         jsonObject.put("oneTimePassword", otp);
 
-        return "Bearer " + RestAssured
+        return "Bearer " + SerenityRest
                 .given()
                 .header("Content-Type", "application/json")
                 .body(jsonObject.toString())

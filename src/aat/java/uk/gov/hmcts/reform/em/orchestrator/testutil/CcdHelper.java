@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.em.orchestrator.testutil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import net.serenitybdd.rest.SerenityRest;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Assert;
@@ -222,7 +222,7 @@ public class CcdHelper {
         String s2sToken = s2sHelper.getCcdGwS2sToken();
 
 
-        return RestAssured.given().log().all()
+        return SerenityRest.given().log().all()
                 .header("Authorization", userToken)
                 .header("ServiceAuthorization", s2sToken);
 
