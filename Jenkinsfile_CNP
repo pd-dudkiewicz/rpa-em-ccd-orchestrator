@@ -54,6 +54,8 @@ withPipeline(type , product, component) {
     enableDockerBuild()
     loadVaultSecrets(secrets)
     installCharts()
+//    enableAksStagingDeployment()
+//    disableLegacyDeployment()
 
     after('smoketest:demo') {
         env.IDAM_API_BASE_URI = 'https://idam-api.demo.platform.hmcts.net'

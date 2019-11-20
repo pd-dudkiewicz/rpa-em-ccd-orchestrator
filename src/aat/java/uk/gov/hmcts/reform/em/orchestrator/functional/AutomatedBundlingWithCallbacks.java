@@ -3,15 +3,15 @@ package uk.gov.hmcts.reform.em.orchestrator.functional;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Assert;
 import org.junit.Test;
-import uk.gov.hmcts.reform.em.orchestrator.testutil.TestUtil;
+
+import static uk.gov.hmcts.reform.em.orchestrator.functional.TestSuiteInit.*;
 
 public class AutomatedBundlingWithCallbacks {
 
-    private final TestUtil testUtil = new TestUtil();
+    private static final int WAIT_SECONDS = 60;
 
     @Test
     public void testSuccessfulAsyncStitching() throws Exception {
-        testUtil.getCcdHelper().importCcdDefinitionFile();
         String uploadedUrl = testUtil.uploadDocument();
         String documentString = testUtil.getCcdHelper().getCcdDocumentJson("my doc", uploadedUrl, "mypdf.pdf");
         String caseId = testUtil.getCcdHelper().createCase(documentString);
@@ -24,9 +24,9 @@ public class AutomatedBundlingWithCallbacks {
                 createTriggerResponse.get("case_details").get("case_data"));
         System.out.println(finishEventResponse.toString());
         int i = 0;
-        while (i < 10) {
+        while (i < WAIT_SECONDS) {
             JsonNode caseJson = testUtil.getCcdHelper().getCase(caseId);
-            if (!caseJson.findPath("stitchStatus").asText().equals("null")) {
+            if (!caseJson.findPath("stitchStatus").asText().equals("NEW")) {
                 Assert.assertEquals("DONE", caseJson.findPath("stitchStatus").asText());
                 Assert.assertEquals("null", caseJson.findPath("stitchingFailureMessage").asText());
                 break;
@@ -35,14 +35,13 @@ public class AutomatedBundlingWithCallbacks {
             System.out.println("waiting");
             i++;
         }
-        if (i >= 10) {
+        if (i >= WAIT_SECONDS) {
             Assert.fail("Status was not retrieved.");
         }
     }
 
     @Test
     public void testUnSuccessfulAsyncStitching() throws Exception {
-        testUtil.getCcdHelper().importCcdDefinitionFile();
         String uploadedUrl = testUtil.uploadDocument("dm-text.txt", "text/plain");
         String documentString = testUtil.getCcdHelper().getCcdDocumentJson("my doc text", uploadedUrl, "mydoc.txt");
         String caseId = testUtil.getCcdHelper().createCase(documentString);
@@ -55,9 +54,9 @@ public class AutomatedBundlingWithCallbacks {
                 createTriggerResponse.get("case_details").get("case_data"));
         System.out.println(finishEventResponse.toString());
         int i = 0;
-        while (i < 10) {
+        while (i < WAIT_SECONDS) {
             JsonNode caseJson = testUtil.getCcdHelper().getCase(caseId);
-            if (!caseJson.findPath("stitchStatus").asText().equals("null")) {
+            if (!caseJson.findPath("stitchStatus").asText().equals("NEW")) {
                 Assert.assertEquals("FAILED", caseJson.findPath("stitchStatus").asText());
                 Assert.assertEquals("Unknown file type: text/plain", caseJson.findPath("stitchingFailureMessage").asText());
                 break;
@@ -66,7 +65,7 @@ public class AutomatedBundlingWithCallbacks {
             i++;
             System.out.println("waiting");
         }
-        if (i >= 10) {
+        if (i >= WAIT_SECONDS) {
             Assert.fail("Status was not retrieved.");
         }
     }

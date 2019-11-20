@@ -19,11 +19,14 @@ public class BundleFactory {
 
     public CcdBundleDTO create(BundleConfiguration configuration, JsonNode caseJson) throws DocumentSelectorException {
         CcdBundleDTO bundle = new CcdBundleDTO();
-        bundle.setId(UUID.randomUUID());
+        bundle.setId(UUID.randomUUID().toString());
         bundle.setTitle(configuration.title);
+        bundle.setCoverpageTemplate(configuration.coverpageTemplate);
         bundle.setHasCoversheetsAsBoolean(configuration.hasCoversheets);
         bundle.setHasTableOfContentsAsBoolean(configuration.hasTableOfContents);
         bundle.setHasFolderCoversheetsAsBoolean(configuration.hasFolderCoversheets);
+        bundle.setPageNumberFormat(configuration.pageNumberFormat);
+        bundle.setPaginationStyle(configuration.paginationStyle);
         bundle.setFileName(configuration.filename);
         bundle.setEligibleForCloningAsBoolean(false);
         bundle.setEligibleForStitchingAsBoolean(false);

@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.em.orchestrator.stitching.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonNode;
+import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdBundlePaginationStyle;
+import uk.gov.hmcts.reform.em.orchestrator.domain.enumeration.PageNumberFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +17,13 @@ public class StitchingBundleDTO {
     private List<StitchingBundleFolderDTO> folders = new ArrayList<>();
     private List<StitchingBundleDocumentDTO> documents = new ArrayList<>();
     private String fileName;
+    private String coverpageTemplate;
+    private JsonNode coverpageTemplateData;
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
+    private CcdBundlePaginationStyle paginationStyle = CcdBundlePaginationStyle.off;
+    private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
 
     public String getBundleTitle() {
         return bundleTitle;
@@ -58,6 +65,22 @@ public class StitchingBundleDTO {
         this.fileName = fileName;
     }
 
+    public String getCoverpageTemplate() {
+        return coverpageTemplate;
+    }
+
+    public void setCoverpageTemplate(String coverpageTemplate) {
+        this.coverpageTemplate = coverpageTemplate;
+    }
+
+    public JsonNode getCoverpageTemplateData() {
+        return coverpageTemplateData;
+    }
+
+    public void setCoverpageTemplateData(JsonNode coverpageTemplateData) {
+        this.coverpageTemplateData = coverpageTemplateData;
+    }
+
     public boolean getHasTableOfContents() {
         return hasTableOfContents;
     }
@@ -80,6 +103,22 @@ public class StitchingBundleDTO {
 
     public void setHasFolderCoversheets(boolean hasFolderCoversheets) {
         this.hasFolderCoversheets = hasFolderCoversheets;
+    }
+
+    public CcdBundlePaginationStyle getPaginationStyle() {
+        return paginationStyle;
+    }
+
+    public void setPaginationStyle(CcdBundlePaginationStyle paginationStyle) {
+        this.paginationStyle = paginationStyle;
+    }
+  
+    public PageNumberFormat getPageNumberFormat() {
+        return pageNumberFormat;
+    }
+
+    public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {
+        this.pageNumberFormat = pageNumberFormat;
     }
 
     public String getStitchedDocumentURI() {

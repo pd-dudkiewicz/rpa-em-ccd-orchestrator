@@ -7,16 +7,13 @@ import org.junit.Assert;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class IdamHelper {
 
-    private static final String USERNAME = "testytesttest@test.net";
+    private static final String USERNAME = "testytesttest" + Env.getTestUrl().hashCode() + "@test.net";
     private static final String PASSWORD = "4590fgvhbfgbDdffm3lk4j";
 
     private final String idamUrl;
@@ -36,12 +33,7 @@ public class IdamHelper {
     }
 
     public String getIdamToken() {
-        createUser();
-
-        String code = getCode();
-        String token = getToken(code);
-
-        return "Bearer " + token;
+        return getIdamToken(USERNAME, Stream.of("caseworker").collect(Collectors.toList()));
     }
 
     public String getIdamToken(String username, List<String> roles) {
@@ -59,21 +51,17 @@ public class IdamHelper {
     }
 
     public String getUserId(String username) {
-        try {
-            return mapper.readTree(Base64.getDecoder().decode(idamTokens.get(username).split("\\.")[1]))
-                    .get("id").asText();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+        String userId = RestAssured
+            .given().log().all()
+            .header("Authorization", idamTokens.get(username))
+            .get(idamUrl + "/details").andReturn().jsonPath().get("id").toString();
 
-    public void createUser() {
-        createUser(USERNAME, Stream.of("caseworker").collect(Collectors.toList()));
+        return userId;
     }
 
     public void createUser(String username, List<String> roles) {
         try {
-            System.out.println(RestAssured
+            RestAssured
                     .given().log().all()
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .body(mapper.writeValueAsString(CreateUserDto.builder()
@@ -83,7 +71,7 @@ public class IdamHelper {
                             .forename("x")
                             .roles(roles.stream().map(role -> new CreateUserRolesDto(role)).collect(Collectors.toList()))
                             .build()))
-                    .post(idamUrl + "/testing-support/accounts").andReturn().print());
+                    .post(idamUrl + "/testing-support/accounts");
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -94,10 +82,6 @@ public class IdamHelper {
                 .delete(idamUrl + "/testing-support/accounts/" + username).andReturn().getStatusCode();
         Assert.assertTrue(HttpHelper.isSuccessful(statusCode) || statusCode == 404);
         idamTokens.remove(username);
-    }
-
-    private String getCode() {
-        return getCode(USERNAME);
     }
 
     private String getCode(String username) {

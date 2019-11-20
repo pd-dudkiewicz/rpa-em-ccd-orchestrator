@@ -2,17 +2,18 @@ package uk.gov.hmcts.reform.em.orchestrator.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonNode;
+import uk.gov.hmcts.reform.em.orchestrator.domain.enumeration.PageNumberFormat;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CcdBundleDTO {
 
-    private UUID id;
+    private String id;
     private String title;
     @Size(max = 255)
     private String description;
@@ -25,17 +26,22 @@ public class CcdBundleDTO {
     @Size(min = 2, max = 30)
     @Pattern(regexp = "^[-._A-Za-z0-9]*$")
     private String fileName;
+    private String coverpageTemplate;
+    @JsonIgnore
+    private JsonNode coverpageTemplateData;
     private CcdBoolean hasTableOfContents;
     private CcdBoolean hasCoversheets;
     private CcdBoolean hasFolderCoversheets;
     private String stitchStatus;
+    private CcdBundlePaginationStyle paginationStyle = CcdBundlePaginationStyle.off;
+    private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
     private String stitchingFailureMessage;
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -127,6 +133,22 @@ public class CcdBundleDTO {
         this.fileName = fileName;
     }
 
+    public String getCoverpageTemplate() {
+        return coverpageTemplate;
+    }
+
+    public void setCoverpageTemplate(String coverpageTemplate) {
+        this.coverpageTemplate = coverpageTemplate;
+    }
+
+    public JsonNode getCoverpageTemplateData() {
+        return coverpageTemplateData;
+    }
+
+    public void setCoverpageTemplateData(JsonNode coverpageTemplateData) {
+        this.coverpageTemplateData = coverpageTemplateData;
+    }
+
     public CcdBoolean getHasTableOfContents() {
         return hasTableOfContents;
     }
@@ -171,11 +193,28 @@ public class CcdBundleDTO {
         this.hasFolderCoversheets = hasFolderCoversheets ? CcdBoolean.Yes : CcdBoolean.No;
     }
 
+    public CcdBundlePaginationStyle getPaginationStyle() {
+        return paginationStyle;
+    }
+
+    public void setPaginationStyle(CcdBundlePaginationStyle paginationStyle) {
+        this.paginationStyle = paginationStyle;
+    }
+
+    public PageNumberFormat getPageNumberFormat() {
+        return pageNumberFormat;
+    }
+
+    public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {
+        this.pageNumberFormat = pageNumberFormat;
+    }
+
     public String getStitchingFailureMessage() {
         return stitchingFailureMessage;
     }
 
     public void setStitchingFailureMessage(String stitchingFailureMessage) {
         this.stitchingFailureMessage = stitchingFailureMessage;
+
     }
 }
