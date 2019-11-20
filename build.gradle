@@ -10,7 +10,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.41")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.71")
     }
 }
 
@@ -134,9 +134,9 @@ dependencies {
 //    testCompile "io.rest-assured:rest-assured:4.0.0"
 //    testCompile group: "io.rest-assured", name: "json-path", version: "4.0.0"
 //    testCompile group: "io.rest-assured", name: "xml-path", version: "4.0.0"
-    testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: '2.0.71'
-    testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: '2.0.71'
-    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: '2.0.71'
+    aatCompile group: 'net.serenity-bdd', name: 'serenity-core', version: '2.0.71'
+    aatCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: '2.0.71'
+    aatCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: '2.0.71'
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.5.2"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.5.2"
