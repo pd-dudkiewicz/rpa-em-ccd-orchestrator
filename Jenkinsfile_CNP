@@ -41,8 +41,8 @@ env.S2S_BASE_URI = 'http://rpe-service-auth-provider-demo.service.core-compute-d
 env.IDAM_WEBSHOW_WHITELIST = 'https://em-show-demo.service.core-compute-demo.internal/oauth2/callback'
 env.EM_STITCHING_API_URL = 'http://em-stitching-demo.service.core-compute-demo.internal'
 env.DM_STORE_APP_URL = 'http://dm-store-demo.service.core-compute-demo.internal'
-env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.internal'
-env.CCD_DATA_API = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
+env.CCD_DEF_API = 'http://ccd-definition-store-api-demo.service.core-compute-demo.internal'
+env.CCD_DATA_API = 'http://ccd-data-store-api-demo.service.core-compute-demo.internal'
 
 def vaultOverrides = [
         'preview' : 'aat',
