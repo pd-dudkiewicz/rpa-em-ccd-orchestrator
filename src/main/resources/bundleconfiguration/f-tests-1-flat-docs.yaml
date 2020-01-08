@@ -2,7 +2,10 @@ title: Functional tests bundle 1
 filename: bundle.pdf
 hasTableOfContents: true
 hasCoversheets: true
+sort: dateAscending
 hasFolderCoversheets: true
+paginationStyle: topCenter
+pageNumberFormat: pageRange
 documents:
   - type: documentSet
     property: /caseDocuments

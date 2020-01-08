@@ -2,58 +2,73 @@ package uk.gov.hmcts.reform.em.orchestrator.testutil;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import org.springframework.http.MediaType;
-import uk.gov.hmcts.reform.em.orchestrator.service.dto.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdBoolean;
+import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdBundleDTO;
+import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdBundleDocumentDTO;
+import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdDocument;
+import uk.gov.hmcts.reform.em.orchestrator.service.dto.CcdValue;
+import uk.gov.hmcts.reform.em.test.dm.DmHelper;
+import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
+import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Service
 public class TestUtil {
 
-    private final String idamAuth;
-    private final String s2sAuth;
+    private String idamAuth;
+    private String s2sAuth;
 
-    public TestUtil() {
-        IdamHelper idamHelper = new IdamHelper(
-            Env.getIdamUrl(),
-            Env.getOAuthClient(),
-            Env.getOAuthSecret(),
-            Env.getOAuthRedirect()
-        );
+    @Autowired
+    private IdamHelper idamHelper;
+    @Autowired
+    private S2sHelper s2sHelper;
+    @Autowired
+    private DmHelper dmHelper;
+    @Value("${test.url}")
+    private String testUrl;
+    @Value("${document_management.url}")
+    private String dmApiUrl;
+    @Value("${document_management.docker_url}")
+    private String dmDocumentApiUrl;
 
-        S2sHelper s2sHelper = new S2sHelper(
-            Env.getS2sUrl(),
-            Env.getS2sSecret(),
-            Env.getS2sMicroservice()
-        );
-
+    @PostConstruct
+    public void init() {
+        idamHelper.createUser(getUsername(), Stream.of("caseworker").collect(Collectors.toList()));
         RestAssured.useRelaxedHTTPSValidation();
-
-        idamAuth = idamHelper.getIdamToken();
+        idamAuth = idamHelper.authenticateUser(getUsername());
         s2sAuth = s2sHelper.getS2sToken();
     }
 
-    public String uploadDocument(String pdfName) {
-        String url = s2sAuthRequest()
-            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-            .multiPart("files", "test.pdf", ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf")
-            .multiPart("classification", "PUBLIC")
-            .request("POST", Env.getDmApiUrl() + "/documents")
-            .getBody()
-            .jsonPath()
-            .get("_embedded.documents[0]._links.self.href");
+    public String uploadDocument(String fileName, String mimeType) {
+        try {
+            String url = dmHelper.getDocumentMetadata(
+                    dmHelper.uploadAndGetId(
+                            ClassLoader.getSystemResourceAsStream(fileName), mimeType, fileName))
+                    .links.self.href;
 
-        return Env.getDmApiUrl().equals("http://localhost:4603")
-            ? url.replaceAll(Env.getDmApiUrl(), Env.getDockerDmApiUrl())
-            : url;
+            return getDmApiUrl().equals("http://localhost:4603")
+                    ? url.replaceAll(getDmApiUrl(), getDmDocumentApiUrl())
+                    : url;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String uploadDocument() {
-        return uploadDocument("annotationTemplate.pdf");
+        return uploadDocument("annotationTemplate.pdf", "application/pdf");
     }
 
     public RequestSpecification s2sAuthRequest() {
@@ -69,7 +84,7 @@ public class TestUtil {
 
     public CcdBundleDTO getTestBundle() {
         CcdBundleDTO bundle = new CcdBundleDTO();
-        bundle.setId(2L);
+        bundle.setId(UUID.randomUUID().toString());
         bundle.setTitle("Bundle title");
         bundle.setDescription("Test bundle");
         bundle.setEligibleForStitchingAsBoolean(true);
@@ -115,41 +130,29 @@ public class TestUtil {
         return bundle;
     }
 
-    public String uploadWordDocument(String docName) {
-        String url = s2sAuthRequest()
-            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-                .multiPart("files", "test.doc", ClassLoader.getSystemResourceAsStream(docName),
-                        "application/msword")
-            .multiPart("classification", "PUBLIC")
-            .request("POST", Env.getDmApiUrl() + "/documents")
-            .getBody()
-            .jsonPath()
-            .get("_embedded.documents[0]._links.self.href");
-
-        return Env.getDmApiUrl().equals("http://localhost:4603")
-            ? url.replaceAll(Env.getDmApiUrl(), Env.getDockerDmApiUrl())
-            : url;
-    }
-
     public String uploadDocX(String docName) {
-        String url = s2sAuthRequest()
-            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-                .multiPart("files", "test.docx", ClassLoader.getSystemResourceAsStream(docName),
-                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-            .multiPart("classification", "PUBLIC")
-            .request("POST", Env.getDmApiUrl() + "/documents")
-            .getBody()
-            .jsonPath()
-            .get("_embedded.documents[0]._links.self.href");
-
-        return Env.getDmApiUrl().equals("http://localhost:4603")
-            ? url.replaceAll(Env.getDmApiUrl(), Env.getDockerDmApiUrl())
-            : url;
+        return uploadDocument(docName, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
     }
 
     public static String readFile(String path) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, StandardCharsets.US_ASCII);
+    }
+
+    public String getUsername() {
+        return "testytesttest" + getTestUrl().hashCode() + "@test.net";
+    }
+
+    public String getTestUrl() {
+        return testUrl;
+    }
+
+    public String getDmApiUrl() {
+        return dmApiUrl;
+    }
+
+    public String getDmDocumentApiUrl() {
+        return dmDocumentApiUrl;
     }
 
 }
