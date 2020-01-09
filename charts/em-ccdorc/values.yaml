@@ -1,6 +1,6 @@
 java:
   applicationPort: 8080
-  image: hmcts.azurecr.io/hmcts/em-ccd-orchestrator:latest
+  image: hmcts.azurecr.io/hmcts/em/ccdorc:latest
   readinessDelay: 40
   readinessTimeout: 5
   readinessPeriod: 15
